@@ -25,6 +25,10 @@ export default function PowiatyMap() {
             }
         }).addTo(map);
 
+        powiatLayer.bindTooltip((layer: any): any => {
+            return layer.feature.properties.nazwa;
+        });
+
         powiatLayer.on('click', function (e) {
             e.layer.feature.properties.active = !e.layer.feature.properties.active ?? true;
             e.layer.setStyle({ fillColor: e.layer.feature.properties.active ? 'green' : '#fbb6' });

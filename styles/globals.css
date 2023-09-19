@@ -44,3 +44,8 @@ body {
     filter: blur(10px) saturate(150%);
     opacity: 0.15;
 }
+
+/* map stuff */
+.leaflet-interactive {
+    outline: none;
+}
