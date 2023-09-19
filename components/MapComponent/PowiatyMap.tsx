@@ -1,7 +1,6 @@
 "use client";
 
 import L from "leaflet";
-
 import powiaty from "@/public/geoData/powiaty.json";
 import { useLayoutEffect } from "react";
 
@@ -9,6 +8,8 @@ export default function PowiatyMap() {
 
     useLayoutEffect(() => {
         const map = L.map('map').setView([52.0, 19.0], 6);
+
+        console.log(powiaty)
 
         var powiatData: any = powiaty;
 
@@ -18,12 +19,13 @@ export default function PowiatyMap() {
 
         var powiatLayer = L.geoJSON(powiatData, {
             style: {
-                fillColor: '#fbb6', // Initial color
+                fillColor: '#dcdcc09f', // Initial color
                 fillOpacity: 0.6,
-                color: '#ff0000',
+                color: '#f100d5',
                 weight: 0.25
             }
         }).addTo(map);
+
 
         powiatLayer.bindTooltip((layer: any): any => {
             return layer.feature.properties.nazwa;
@@ -31,7 +33,7 @@ export default function PowiatyMap() {
 
         powiatLayer.on('click', function (e) {
             e.layer.feature.properties.active = !e.layer.feature.properties.active ?? true;
-            e.layer.setStyle({ fillColor: e.layer.feature.properties.active ? 'green' : '#fbb6' });
+            e.layer.setStyle({ fillColor: e.layer.feature.properties.active ? '#6fd87b' : '#fbb6' });
 
             var powiatName = e.layer.feature.properties.nazwa;
             console.log(powiatName);
@@ -40,5 +42,5 @@ export default function PowiatyMap() {
     }, []);
 
 
-    return <div id="map" style={{ height: "500px", width: "50%" }}></div>;
+    return <div  id="map" style={{ height: "500px", width: "500px" }}></div>;
 }

@@ -1,18 +1,17 @@
-import { InputPlace } from "@/components/InputPlace";
 import LoginButton from "@/components/LoginButton";
+import { MapWrapper } from "@/components/MapComponent/MapWrapper";
 
 import dynamic from "next/dynamic";
-const PowiatyMap = dynamic(() => import("@/components/PowiatyMap"), { ssr: false });
+const PowiatyMap = dynamic(
+  () => import("@/components/MapComponent/PowiatyMap"),
+  { ssr: false }
+);
 
 export default function Home() {
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-start p-24">
-            {/* <h1 className="text-4xl font-semibold text-teal-900">Calculator</h1> */}
-            <InputPlace id="place-inp" name="input-place" />
-
-            <LoginButton></LoginButton>
-
-            <PowiatyMap></PowiatyMap>
-        </main>
-    );
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-14">
+      <MapWrapper />
+      <LoginButton />
+    </main>
+  );
 }

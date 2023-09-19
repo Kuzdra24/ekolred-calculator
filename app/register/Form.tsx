@@ -38,7 +38,7 @@ const Form = () => {
 
     const formSubmit: SubmitHandler<Inputs> = async (form) => {
         const { firstName, lastName, email, password } = form;
-
+        console.log('wee')
         try {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
