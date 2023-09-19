@@ -4,19 +4,20 @@ import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
-    const { fullName, email, password } = await request.json();
+    const { firstName, lastName, email, password } = await request.json();
 
     await connectMongoDB();
 
     const hashedPassword = await bcrypt.hash(password, 5);
 
     const newUser = new User({
-        fullName,
+        firstName,
+        lastName,
         email,
         password: hashedPassword,
+        password_last_changed: Date.now(),
+        role: 'admin',
     });
-
-    console.log(newUser);
 
     try {
         await newUser.save();

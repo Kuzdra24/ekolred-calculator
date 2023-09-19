@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import connectMongoDB from "./mongodb";
 import User from "@/models/user";
 
-export const nextauthOptions: NextAuthOptions = {
+export const nextAuthOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -59,21 +59,20 @@ export const nextauthOptions: NextAuthOptions = {
     },
 
     callbacks: {
-        // async jwt(params: any) {
-        //     if (params.user?.fullName) {
-        //         params.token.fullName = params.user.fullName;
-        //     }
+        session: async ({ session, token }: any) => {
+            if (session?.user) {
+                session.user.firstName = token.firstName;
+                session.user.lastName = token.lastName;
+            }
+            return session;
+        },
 
-        //     if (params.user?.email) {
-        //         params.token.email = params.user.email;
-        //     }
-        //     return params.token;
-        // },
-
-        // async session({ session, token }: any) {
-        //     session.fullName = token.fullName;
-        //     session.email = token.email;
-        //     return session;
-        // },
+        jwt: async ({ user, token }: any) => {
+            if (user) {
+                token.firstName = user.firstName;
+                token.lastName = user.lastName;
+            }
+            return token;
+        },
     },
 };
