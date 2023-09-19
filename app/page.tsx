@@ -1,6 +1,8 @@
 import { InputPlace } from "@/components/InputPlace";
 import LoginButton from "@/components/LoginButton";
-import PowiatyMap from "@/components/PowiatyMap";
+
+import dynamic from "next/dynamic";
+const PowiatyMap = dynamic(() => import("@/components/PowiatyMap"), { ssr: false });
 
 export default function Home() {
     return (
@@ -9,7 +11,7 @@ export default function Home() {
             <InputPlace id="place-inp" name="input-place" />
 
             <LoginButton></LoginButton>
-            
+
             <PowiatyMap></PowiatyMap>
         </main>
     );

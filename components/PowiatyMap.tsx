@@ -1,41 +1,40 @@
 "use client";
 
-import { MapContainer, Marker, Popup, TileLayer, useMap, GeoJSON } from 'react-leaflet'
+import L from "leaflet";
 
 import powiaty from "@/public/geoData/powiaty.json";
+import { useLayoutEffect } from "react";
 
 export default function PowiatyMap() {
-    const position: any = [52.0, 19.0];
 
-    const setColor = ({ properties }: any) => {
-        return {
-            fillColor: '#fbb6',
-            fillOpacity: 0.6,
-            color: '#ff0000',
-            weight: 1
-        };
-    };
+    useLayoutEffect(() => {
+        const map = L.map('map').setView([52.0, 19.0], 6);
 
-    const clickFeature = (feature: any, layer: any) => {
-        layer.on({
-            'click': (e: any) => {
-                e.target.feature.properties.active = !e.target.feature.properties.active ?? true;
-                e.target.setStyle({ fillColor: e.target.feature.properties.active ? 'green' : '#fbb6' });
-                console.log(e.target.feature.properties.nazwa);
-            },
+        var powiatData: any = powiaty;
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var powiatLayer = L.geoJSON(powiatData, {
+            style: {
+                fillColor: '#fbb6', // Initial color
+                fillOpacity: 0.6,
+                color: '#ff0000',
+                weight: 0.25
+            }
+        }).addTo(map);
+
+        powiatLayer.on('click', function (e) {
+            e.layer.feature.properties.active = !e.layer.feature.properties.active ?? true;
+            e.layer.setStyle({ fillColor: e.layer.feature.properties.active ? 'green' : '#fbb6' });
+
+            var powiatName = e.layer.feature.properties.nazwa;
+            console.log(powiatName);
         });
-    };
 
-    return (
-        <>
-            <span style={{color: 'red'}}>CLICK NA POWIAT!!</span>
-            <MapContainer zoom={6} scrollWheelZoom={true} style={{ width: "1000px", height: '500px' }} center={position}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <GeoJSON data={powiaty as any} style={setColor} onEachFeature={clickFeature} />
-            </MapContainer>
-        </>
-    );
+    }, []);
+
+
+    return <div id="map" style={{ height: "500px", width: "50%" }}></div>;
 }
