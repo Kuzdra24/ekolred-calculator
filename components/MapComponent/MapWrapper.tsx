@@ -1,7 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { InputPlace } from "./InputPlace";
-import PowiatyMap from "./PowiatyMap";
+
+import dynamic from "next/dynamic";
+const PowiatyMap = dynamic(
+  () => import("@/components/MapComponent/PowiatyMap"),
+  { ssr: false }
+);
 
 export const MapWrapper = () => {
   const [city, setCity]: any = useState({});

@@ -1,6 +1,7 @@
 // temporary - just to test session and jwt
 
 "use client";
+
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
