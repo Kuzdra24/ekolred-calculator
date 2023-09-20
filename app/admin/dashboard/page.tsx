@@ -3,23 +3,16 @@ import { nextAuthOptions } from "@/lib/nextAuthOptions";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-import dynamic from "next/dynamic";
-const PowiatyMap = dynamic(
-  () => import("@/components/AdminMap/PowiatyMap"),
-  { ssr: false }
-);
-
-export default async function Admin() {
+export default async function Dashboard() {
     const session = await getServerSession(nextAuthOptions);
-    
+
     if (!session) {
         redirect("/login?callbackUrl=/admin");
     }
 
     return (
         <>
-            <div>admin</div>
-            <PowiatyMap></PowiatyMap>
+            <div>admin dashboard</div>
         </>
     )
 }

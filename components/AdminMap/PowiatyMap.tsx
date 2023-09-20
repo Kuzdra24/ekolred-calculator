@@ -11,7 +11,7 @@ export default function PowiatyMap({ maxZoom = 10 }) {
     const fetchPowiatyData = async () => {
         let pow = JSON.parse(JSON.stringify(powiatyData));
 
-        let res = await fetch("http://localhost:3000/api/powiaty");
+        let res = await fetch(`http://localhost:3000/api/powiaty`);
         let json = await res.json();
 
         for (let p of pow.features) {
@@ -69,10 +69,6 @@ export default function PowiatyMap({ maxZoom = 10 }) {
         });
 
         powiatLayer.on('click', async function (e) {
-            // let wasActive = e.layer.feature.properties.active ?? false;
-            // var powiatName = e.layer.feature.properties.nazwa;
-
-            // console.log(wasActive, e.layer.feature.properties.stawka);
             let aktywny = !e.layer.feature.properties.aktywny ?? true;
 
             const response = await updatePowiat(e.layer.feature.properties.id, e.layer.feature.properties.nazwa,
@@ -85,10 +81,16 @@ export default function PowiatyMap({ maxZoom = 10 }) {
 
             setSelectedPowiat(e.layer.feature.properties);
         });
+
+        return () => {
+            map.remove();
+        };
     };
 
     useEffect(() => {
-        createMapFromFetchedData();
+        const map: any = createMapFromFetchedData();
+
+        return map;
     }, []);
 
 

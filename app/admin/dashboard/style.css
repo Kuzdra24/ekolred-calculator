@@ -1,0 +1,31 @@
+.dashboard-layout {
+    display: flex;
+    flex-direction: row;
+
+    height: 100vh;
+}
+
+.side-nav {
+    flex: 1;
+    background-color: rgb(28, 28, 92);
+    color: white;
+    height: 100%;
+}
+
+.header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 2rem 1.5rem;
+}
+
+.menu {
+    margin: 0 1.5rem;
+}
+
+.menu-item {
+    margin: 1rem 0;
+}
+
+.content {
+    flex: 5;
+}
