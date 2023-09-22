@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 export const GET = async (request: NextRequest) => {
 
     const session = await getServerSession(nextAuthOptions);
+    console.log(session) 
     if (!session) {
         return new NextResponse("Unauthenticated", {
             status: 401,

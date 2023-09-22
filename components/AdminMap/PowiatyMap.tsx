@@ -2,108 +2,150 @@
 
 import L from "leaflet";
 import powiaty from "@/public/geoData/powiaty.json";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function PowiatyMap({ maxZoom = 10 }) {
-    const [powiatyData, setPowiatyData] = useState<any>(powiaty);
-    const [selectedPowiat, setSelectedPowiat] = useState<any>(null);
+  const [powiatyData, setPowiatyData] = useState<any>(powiaty);
+  const [selectedPowiat, setSelectedPowiat] = useState<any>(null);
+  const [price, setPrice] = useState<string>('0');
 
-    const fetchPowiatyData = async () => {
-        let pow = JSON.parse(JSON.stringify(powiatyData));
+  const fetchPowiatyData = async () => {
+    let pow = JSON.parse(JSON.stringify(powiatyData));
 
-        let res = await fetch(`http://localhost:3000/api/powiaty`);
-        let json = await res.json();
+    let res = await fetch(`http://localhost:3000/api/powiaty`);
+    let json = await res.json();
 
-        for (let p of pow.features) {
-            for (let fp of json) {
-                if (fp.id == p.properties.id) {
-                    p.properties.aktywny = fp.aktywny;
-                    p.properties.stawka = fp.stawka;
-
-                    console.log("CHANGED ACTIVE - ", fp.nazwa);
-                    break;
-                }
-            }
+    for (let p of pow.features) {
+      for (let fp of json) {
+        if (fp.id == p.properties.id) {
+          p.properties.aktywny = fp.aktywny;
+          p.properties.stawka = fp.stawka;
+          console.log("CHANGED ACTIVE - ", fp.nazwa);
+          break;
         }
+      }
+    }
 
-        return pow
+    return pow;
+  };
+
+  const styleFunction = (feature: any): any => {
+    return {
+      fillColor: feature.properties.aktywny ? "green" : "#dcdcc09f", // Initial color
+      fillOpacity: 0.6,
+      color: "#f100d5", // border color
+      weight: 0.25,
     };
+  };
 
-    const styleFunction = (feature: any): any => {
-        return {
-            fillColor: feature.properties.aktywny ? 'green' : '#dcdcc09f', // Initial color
-            fillOpacity: 0.6,
-            color: '#f100d5', // border color
-            weight: 0.25
-        }
+  const updatePowiat = async (
+    id: number,
+    nazwa: string,
+    stawka: number,
+    aktywny: boolean
+  ) => {
+    return await fetch("http://localhost:3000/api/powiaty", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, nazwa, stawka, aktywny }),
+    });
+  };
+
+  const createMapFromFetchedData = async () => {
+    var powiatData: any = await fetchPowiatyData();
+
+    const map = L.map("map", { maxZoom }).setView([52.0, 19.0], 6);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxNativeZoom: maxZoom,
+    }).addTo(map);
+
+    var powiatLayer = L.geoJSON(powiatData, {
+      style: styleFunction,
+    }).addTo(map);
+
+    powiatLayer.bindTooltip((layer: any): any => {
+      return layer.feature.properties.nazwa;
+    });
+
+    powiatLayer.on("click", async function (e) {
+      let aktywny = !e.layer.feature.properties.aktywny ?? true;
+      setPrice(e.layer.feature.properties.price);
+      const response = await updatePowiat(
+        e.layer.feature.properties.id,
+        e.layer.feature.properties.nazwa,
+        e.layer.feature.properties.stawka ?? 10,
+        aktywny
+      );
+
+      if (response.status == 201) {
+        e.layer.feature.properties.aktywny = aktywny;
+        e.layer.setStyle({ fillColor: aktywny ? "green" : "#dcdcc09f" });
+      }
+
+      setSelectedPowiat(e.layer.feature.properties);
+    });
+
+    return () => {
+      map.remove();
     };
+  };
 
-    const updatePowiat = async (id: number, nazwa: string, stawka: number, aktywny: boolean) => {
-        return await fetch('http://localhost:3000/api/powiaty', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id, nazwa, stawka, aktywny })
-        });
-    };
+  const handleSubmit = async () => {
+    try {
+      const updatedData = {
+        id: selectedPowiat.id,
+        stawka: price,
+      };
 
-    const createMapFromFetchedData = async () => {
-        var powiatData: any = await fetchPowiatyData();
+      await fetch("http://localhost:3000/api/powiaty", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+    } catch (error) {
+      console.error("Wystąpił błąd podczas zapytania:", error);
+    }
+  };
 
-        const map = L.map('map', { maxZoom }).setView([52.0, 19.0], 6);
+  useEffect(() => {
+    async function fetchData() {
+      await createMapFromFetchedData();
+    }
+    fetchData();
+  }, []);
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxNativeZoom: maxZoom,
-        }).addTo(map);
-
-        var powiatLayer = L.geoJSON(powiatData, {
-            style: styleFunction,
-        }).addTo(map);
-
-
-        powiatLayer.bindTooltip((layer: any): any => {
-            return layer.feature.properties.nazwa;
-        });
-
-        powiatLayer.on('click', async function (e) {
-            let aktywny = !e.layer.feature.properties.aktywny ?? true;
-
-            const response = await updatePowiat(e.layer.feature.properties.id, e.layer.feature.properties.nazwa,
-                e.layer.feature.properties.stawka ?? 10, aktywny);
-
-            if (response.status == 201) {
-                e.layer.feature.properties.aktywny = aktywny;
-                e.layer.setStyle({ fillColor: aktywny ? 'green' : '#dcdcc09f' });
-            }
-
-            setSelectedPowiat(e.layer.feature.properties);
-        });
-
-        return () => {
-            map.remove();
-        };
-    };
-
-    useEffect(() => {
-        const map: any = createMapFromFetchedData();
-
-        return map;
-    }, []);
-
-
-    return (
-        <>
-            <div className="flex">
-                <div id="map" style={{ height: "500px", width: "500px" }}></div>
-                {selectedPowiat != null && <div>
-                    Powait: {selectedPowiat.nazwa} <br />
-                    Stawka: {selectedPowiat.stawka} <br />
-                    Aktywny: {selectedPowiat.aktywny ? "TAK" : "NIE"} <br />
-                </div>}
-            </div>
-        </>
-    )
+  return (
+    <>
+      <div className="flex">
+        <div id="map" style={{ height: "500px", width: "500px" }}></div>
+        {selectedPowiat != null && (
+          <div className="p-4">
+            Powait: {selectedPowiat.nazwa} <br />
+            Stawka: {selectedPowiat.stawka} <br />
+            Aktywny: {selectedPowiat.aktywny ? "TAK" : "NIE"} <br />
+            <form onSubmit={handleSubmit}>
+              <input
+                className="border-solid border-2 border-cyan-800"
+                type="number"
+                placeholder="Stawka"
+                value={price ? price : selectedPowiat.stawka}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                }}
+              />
+              <input type="submit" />
+            </form>
+          </div>
+        )}
+      </div>
+    </>
+  );
 }

@@ -34,7 +34,7 @@ body {
         radial-gradient(at 97% 21%, rgb(193 241 227) 0px, transparent 30%),
         radial-gradient(at 52% 99%, rgb(86 137 156), transparent 30%),
         radial-gradient(at 10% 29%, hsla(256, 96%, 67%, 1) 0px, transparent 30%),
-        radial-gradient(at 97% 96%, hsla(38, 60%, 74%, 1) 0px, transparent 30%),
+        radial-gradient(at 97% 96%, rgb(204, 228, 149) 0px, transparent 30%),
         radial-gradient(at 33% 50%, rgb(34, 166, 40) 0px, transparent 30%),
         radial-gradient(at 79% 53%, rgb(131, 192, 38) 0px, transparent 30%);
     position: absolute;
