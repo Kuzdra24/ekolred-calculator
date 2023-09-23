@@ -19,7 +19,7 @@ export default async function ServiceRegion() {
     return (
         <>
             <div>service region map</div>
-            <PowiatyMap></PowiatyMap>
+            <PowiatyMap style={{height: "500px", width: "800px"}}></PowiatyMap>
         </>
     )
 }

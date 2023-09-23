@@ -1,14 +1,12 @@
-import Powiat from "@/models/powiat";
+import Region from "@/models/region";
 import connectMongoDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { nextAuthOptions } from "@/lib/nextAuthOptions";
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 
-export const GET = async (request: NextRequest) => {
+export const GET = async () => {
 
     const session = await getServerSession(nextAuthOptions);
-    console.log(session) 
     if (!session) {
         return new NextResponse("Unauthenticated", {
             status: 401,
@@ -18,10 +16,10 @@ export const GET = async (request: NextRequest) => {
     await connectMongoDB();
 
     try {
-        const powiaty = await Powiat.find({}).exec();
+        const regions = await Region.find({}).exec();
 
 
-        return new NextResponse(JSON.stringify(powiaty), {
+        return new NextResponse(JSON.stringify(regions), {
             status: 200,
         });
     } catch (err: any) {
@@ -34,7 +32,7 @@ export const GET = async (request: NextRequest) => {
 };
 
 export const POST = async (request: NextRequest) => {
-    const { id, nazwa, stawka, aktywny } = await request.json();
+    const { id, name, price, active } = await request.json();
 
     const session = await getServerSession(nextAuthOptions);
     if (!session) {
@@ -46,9 +44,9 @@ export const POST = async (request: NextRequest) => {
     await connectMongoDB();
 
     try {
-        await Powiat.updateOne({ id }, { id, nazwa, stawka, aktywny }, { upsert: true }).exec();
+        await Region.updateOne({ id }, { id, name, price, active }, { upsert: true }).exec();
 
-        return new NextResponse("Powiat updated", {
+        return new NextResponse("Region updated", {
             status: 201,
         });
     } catch (err: any) {

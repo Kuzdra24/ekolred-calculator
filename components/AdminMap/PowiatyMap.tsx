@@ -4,7 +4,7 @@ import L from "leaflet";
 import powiaty from "@/public/geoData/powiaty.json";
 import { useEffect, useState } from "react";
 
-export default function PowiatyMap({ maxZoom = 10 }) {
+export default function PowiatyMap({ maxZoom = 10, style= {} }) {
   const [powiatyData, setPowiatyData] = useState<any>(powiaty);
   const [selectedPowiat, setSelectedPowiat] = useState<any>(null);
   const [price, setPrice] = useState<string>('0');
@@ -12,15 +12,14 @@ export default function PowiatyMap({ maxZoom = 10 }) {
   const fetchPowiatyData = async () => {
     let pow = JSON.parse(JSON.stringify(powiatyData));
 
-    let res = await fetch(`http://localhost:3000/api/powiaty`);
+    let res = await fetch(`http://localhost:3000/api/regions`);
     let json = await res.json();
 
     for (let p of pow.features) {
       for (let fp of json) {
         if (fp.id == p.properties.id) {
-          p.properties.aktywny = fp.aktywny;
-          p.properties.stawka = fp.stawka;
-          console.log("CHANGED ACTIVE - ", fp.nazwa);
+          p.properties.aktywny = fp.active;
+          p.properties.stawka = fp.price;
           break;
         }
       }
@@ -40,17 +39,17 @@ export default function PowiatyMap({ maxZoom = 10 }) {
 
   const updatePowiat = async (
     id: number,
-    nazwa: string,
-    stawka: number,
-    aktywny: boolean
+    name: string,
+    price: number,
+    active: boolean
   ) => {
-    return await fetch("http://localhost:3000/api/powiaty", {
+    return await fetch("http://localhost:3000/api/regions", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id, nazwa, stawka, aktywny }),
+      body: JSON.stringify({ id, name, price, active }),
     });
   };
 
@@ -103,7 +102,7 @@ export default function PowiatyMap({ maxZoom = 10 }) {
         stawka: price,
       };
 
-      await fetch("http://localhost:3000/api/powiaty", {
+      await fetch("http://localhost:3000/api/regions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,13 +124,16 @@ export default function PowiatyMap({ maxZoom = 10 }) {
   return (
     <>
       <div className="flex">
-        <div id="map" style={{ height: "500px", width: "500px" }}></div>
+        <div id="map" style={style}></div>
         {selectedPowiat != null && (
           <div className="p-4">
-            Powait: {selectedPowiat.nazwa} <br />
+            <h2 className="capitalize">{selectedPowiat.nazwa}</h2>
             Stawka: {selectedPowiat.stawka} <br />
             Aktywny: {selectedPowiat.aktywny ? "TAK" : "NIE"} <br />
             <form onSubmit={handleSubmit}>
+              <input type="checkbox" name="" id="active_chbx" />
+              <label htmlFor="active_chbx">Aktywny</label>
+              <br />
               <input
                 className="border-solid border-2 border-cyan-800"
                 type="number"

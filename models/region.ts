@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
 
-const PowiatSchema = new mongoose.Schema(
+const RegionSchema = new mongoose.Schema(
     {
         id: {
             type: Number,
             required: true,
             unique: true,
         },
-        nazwa: {
+        name: {
             type: String,
             required: true,
         },
-        stawka: {
+        price: {
             type: Number,
             required: true,
         },
-        aktywny: {
+        active: {
             type: Boolean,
             required: true,
             default: true,
@@ -24,4 +24,4 @@ const PowiatSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export default mongoose.models.Powiat || mongoose.model("Powiat", PowiatSchema);
+export default mongoose.models.Region || mongoose.model("Region", RegionSchema);
