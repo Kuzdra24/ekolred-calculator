@@ -22,11 +22,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     </h2>
 
                     <ul className='menu'>
-                        <li className='menu-item'><a href="/admin">🖥️ Dashboard</a></li>
-                        <li className='menu-item'><a href="/">☀️ Solar Modules</a></li>
-                        <li className='menu-item'><a href="/">⚡ Inverters</a></li>
-                        <li className='menu-item'><a href="/">🔋 Energy Storage</a></li>
-                        <li className='menu-item'><a href="/admin/serviceRegion">📊 Stats</a></li>
+                        <li className='menu-item'><a href="/admin">🖥️ Panel główny</a></li>
+                        <li className='menu-item'><a href="/">⚙️ Ustawienia serwisu</a></li>
+                        <li className='menu-item'><a href="/">☀️ Moduły</a></li>
+                        <li className='menu-item'><a href="/">⚡ Falowniki</a></li>
+                        <li className='menu-item'><a href="/">🔋&nbsp; Magazyny energii</a></li>
+                        <li className='menu-item'><a href="/admin/serviceRegion">🗺️ Mapa zasięgu</a></li>
+                        <li className='menu-item'><a href="/admin/list">👤&nbsp; Administratorzy (?)</a></li>
                     </ul>
                 </div>
 

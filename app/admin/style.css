@@ -7,6 +7,7 @@
 
 .side-nav {
     flex: 1;
+    min-width: 300px;
     background-color: rgb(28, 28, 92);
     color: white;
     height: 100%;
