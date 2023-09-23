@@ -4,13 +4,21 @@ import L from "leaflet";
 import powiaty from "@/public/geoData/powiaty.json";
 import { useEffect, useState } from "react";
 
-export default function PowiatyMap({ maxZoom = 10, style= {} }) {
-  const [powiatyData, setPowiatyData] = useState<any>(powiaty);
-  const [selectedPowiat, setSelectedPowiat] = useState<any>(null);
+type SelectedRegion = {
+  id: number,
+  nazwa: number,
+  price: number,
+  active: boolean,
+};
+
+export default function PowiatyMap({ maxZoom = 10, style = {} }) {
+  const [selectedRegion, setSelectedRegion] = useState<SelectedRegion | null>(null);
+
   const [price, setPrice] = useState<string>('0');
+  const [active, setActive] = useState<boolean>(false);
 
   const fetchPowiatyData = async () => {
-    let pow = JSON.parse(JSON.stringify(powiatyData));
+    let pow = JSON.parse(JSON.stringify(powiaty));
 
     let res = await fetch(`http://localhost:3000/api/regions`);
     let json = await res.json();
@@ -18,8 +26,8 @@ export default function PowiatyMap({ maxZoom = 10, style= {} }) {
     for (let p of pow.features) {
       for (let fp of json) {
         if (fp.id == p.properties.id) {
-          p.properties.aktywny = fp.active;
-          p.properties.stawka = fp.price;
+          p.properties.active = fp.active;
+          p.properties.price = fp.price;
           break;
         }
       }
@@ -30,27 +38,11 @@ export default function PowiatyMap({ maxZoom = 10, style= {} }) {
 
   const styleFunction = (feature: any): any => {
     return {
-      fillColor: feature.properties.aktywny ? "green" : "#dcdcc09f", // Initial color
+      fillColor: feature.properties.active ? "green" : "#dcdcc09f", // Initial color
       fillOpacity: 0.6,
       color: "#f100d5", // border color
       weight: 0.25,
     };
-  };
-
-  const updatePowiat = async (
-    id: number,
-    name: string,
-    price: number,
-    active: boolean
-  ) => {
-    return await fetch("http://localhost:3000/api/regions", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id, name, price, active }),
-    });
   };
 
   const createMapFromFetchedData = async () => {
@@ -73,21 +65,12 @@ export default function PowiatyMap({ maxZoom = 10, style= {} }) {
     });
 
     powiatLayer.on("click", async function (e) {
-      let aktywny = !e.layer.feature.properties.aktywny ?? true;
-      setPrice(e.layer.feature.properties.price);
-      const response = await updatePowiat(
-        e.layer.feature.properties.id,
-        e.layer.feature.properties.nazwa,
-        e.layer.feature.properties.stawka ?? 10,
-        aktywny
-      );
+      powiatLayer.resetStyle();
+      e.layer.setStyle({ fillColor: "#2447e49f" });
 
-      if (response.status == 201) {
-        e.layer.feature.properties.aktywny = aktywny;
-        e.layer.setStyle({ fillColor: aktywny ? "green" : "#dcdcc09f" });
-      }
-
-      setSelectedPowiat(e.layer.feature.properties);
+      setSelectedRegion(e.layer.feature.properties);
+      setPrice(e.layer.feature.properties.price ?? "");
+      setActive(e.layer.feature.properties.active ?? false);
     });
 
     return () => {
@@ -95,11 +78,13 @@ export default function PowiatyMap({ maxZoom = 10, style= {} }) {
     };
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: any) => {
     try {
       const updatedData = {
-        id: selectedPowiat.id,
-        stawka: price,
+        id: selectedRegion?.id,
+        name: selectedRegion?.nazwa,
+        active: active,
+        price: price,
       };
 
       await fetch("http://localhost:3000/api/regions", {
@@ -125,25 +110,33 @@ export default function PowiatyMap({ maxZoom = 10, style= {} }) {
     <>
       <div className="flex">
         <div id="map" style={style}></div>
-        {selectedPowiat != null && (
+        {selectedRegion != null && (
           <div className="p-4">
-            <h2 className="capitalize">{selectedPowiat.nazwa}</h2>
-            Stawka: {selectedPowiat.stawka} <br />
-            Aktywny: {selectedPowiat.aktywny ? "TAK" : "NIE"} <br />
+
+            <h2 className="capitalize font-bold">{selectedRegion.nazwa}</h2>
+            <br />
+
             <form onSubmit={handleSubmit}>
-              <input type="checkbox" name="" id="active_chbx" />
-              <label htmlFor="active_chbx">Aktywny</label>
+              <label htmlFor="active_chbx">Aktywny: </label>
+              <input type="checkbox" name="" id="active_chbx" checked={active} onChange={(e) => setActive(e.target.checked)} />
+
               <br />
+
+
+              Stawka:<br />
               <input
                 className="border-solid border-2 border-cyan-800"
                 type="number"
                 placeholder="Stawka"
-                value={price ? price : selectedPowiat.stawka}
+                value={price}
                 onChange={(e) => {
                   setPrice(e.target.value);
                 }}
               />
-              <input type="submit" />
+
+              <br />
+
+              <button>Zapisz</button>
             </form>
           </div>
         )}
