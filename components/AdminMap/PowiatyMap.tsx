@@ -95,7 +95,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
         body: JSON.stringify(updatedData),
       });
     } catch (error) {
-      console.error("Wystąpił błąd podczas zapytania:", error);
+      console.error(error);
     }
   };
 
@@ -105,7 +105,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
     }
     fetchData();
   }, []);
-
+ 
   return (
     <>
       <div className="flex">
