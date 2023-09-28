@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import powiaty from "@/public/geoData/powiaty.json";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -12,6 +13,7 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
+const turf = require("@turf/turf");
 
 export default function ClientMap() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -29,8 +31,52 @@ export default function ClientMap() {
   const [center, setCenter] = useState(initialCenter);
 
   const mapContainerStyle = {
-    width: "400px",
-    height: "400px",
+    width: "500px",
+    height: "500px",
+  };
+
+  const getPowiatID = (selectedLocation: any, powiaty: any) => {
+    const point = turf.point([selectedLocation.lng, selectedLocation.lat]);
+
+    for (const feature of powiaty.features) {
+      if (feature.geometry.type === "Polygon") {
+        const polygon = turf.polygon(feature.geometry.coordinates);
+        if (turf.booleanPointInPolygon(point, polygon)) {
+          return feature.properties.id;
+        }
+      } else if (feature.geometry.type === "MultiPolygon") {
+        for (const coordinates of feature.geometry.coordinates) {
+          const polygon = turf.polygon(coordinates);
+
+          if (turf.booleanPointInPolygon(point, polygon)) {
+            return feature.properties.id;
+          }
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    const regionId: number | null = getPowiatID(selected, powiaty);
+
+    if (regionId) {
+      fetch(`/api/regions/${regionId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Pobrano region:", data);
+        })
+        .catch((error) => {
+          console.error("Wystąpił błąd:", error);
+        });
+    }
   };
 
   if (!isLoaded) return <div>Loading...</div>;
@@ -38,9 +84,13 @@ export default function ClientMap() {
     <>
       <div className="p-4 flex flex-col justify-center items-center">
         <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} />
-        <button className="bg-blue-500 w-1/2 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md cursor-pointer focus:outline-none">
+        <button
+          onClick={handleSubmit}
+          className="bg-teal-500 w-1/2 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-full shadow-md cursor-pointer focus:outline-none"
+        >
           Sprawdź
         </button>
+        powiat: <strong>{}</strong>
       </div>
       <GoogleMap
         zoom={10}

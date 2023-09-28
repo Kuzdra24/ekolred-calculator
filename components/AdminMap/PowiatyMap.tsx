@@ -16,6 +16,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
 
   const [price, setPrice] = useState<string>('0');
   const [active, setActive] = useState<boolean>(false);
+  const [coordinates, setCoordinates] = useState<object>([])
 
   const fetchPowiatyData = async () => {
     let pow = JSON.parse(JSON.stringify(powiaty));
@@ -69,6 +70,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
       e.layer.setStyle({ fillColor: "#2447e49f" });
 
       setSelectedRegion(e.layer.feature.properties);
+      setCoordinates(e.layer.feature.geometry.coordinates) // add to DB?
       setPrice(e.layer.feature.properties.price ?? "");
       setActive(e.layer.feature.properties.active ?? false);
     });
@@ -85,6 +87,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
         name: selectedRegion?.nazwa,
         active: active,
         price: price,
+        coordinates: coordinates
       };
 
       await fetch("http://localhost:3000/api/regions", {
