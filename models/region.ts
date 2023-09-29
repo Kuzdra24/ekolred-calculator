@@ -19,6 +19,10 @@ const RegionSchema = new mongoose.Schema(
             type: Boolean,
             required: true,
             default: true,
+        },
+        coordinates: {
+            type: Object,
+            require: true,
         }
     },
     { timestamps: true },

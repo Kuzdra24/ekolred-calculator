@@ -18,7 +18,6 @@ export const GET = async () => {
     try {
         const regions = await Region.find({}).exec();
 
-
         return new NextResponse(JSON.stringify(regions), {
             status: 200,
         });
@@ -32,7 +31,7 @@ export const GET = async () => {
 };
 
 export const POST = async (request: NextRequest) => {
-    const { id, name, price, active } = await request.json();
+    const { id, name, price, active, coordinates} = await request.json();
 
     const session = await getServerSession(nextAuthOptions);
     if (!session) {
@@ -44,7 +43,7 @@ export const POST = async (request: NextRequest) => {
     await connectMongoDB();
 
     try {
-        await Region.updateOne({ id }, { id, name, price, active }, { upsert: true }).exec();
+        await Region.updateOne({ id }, { id, name, price, active, coordinates }, { upsert: true }).exec();
 
         return new NextResponse("Region updated", {
             status: 201,
