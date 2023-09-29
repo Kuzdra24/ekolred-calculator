@@ -22,7 +22,7 @@ export default function ClientMap() {
 
   const [selected, setSelected] = useState(null);
   const [center, setCenter] = useState(initialCenter);
-  const [availableRegion, setAvailableRegion] = useState(null);
+  const [availableRegion, setAvailableRegion] = useState<any>(null);
   const [error, setError] = useState("")
 
   const getPowiatID = (selectedLocation: any, powiaty: any) => {
@@ -34,7 +34,7 @@ export default function ClientMap() {
           const polygon = turf.polygon(feature.geometry.coordinates);
           if (turf.booleanPointInPolygon(point, polygon)) {
             return feature.properties.id;
-          }else{return 1}
+          }
         } else if (feature.geometry.type === "MultiPolygon") {
           for (const coordinates of feature.geometry.coordinates) {
             const polygon = turf.polygon(coordinates);
@@ -45,6 +45,8 @@ export default function ClientMap() {
           }
         }
       }
+
+      return -1;
     } else {
       setError("Nie wybrano miejsca")
       console.log("nie wybrano");
@@ -57,31 +59,27 @@ export default function ClientMap() {
     const regionId: number | null = getPowiatID(selected, powiaty);
 
     if (regionId) {
-      fetch(`/api/regions/${regionId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setAvailableRegion(data);
-          console.log("Pobrano region:", data);
-        })
-        .catch((error) => {
-          setAvailableRegion(null);
-          setError('Podany region jest nie dostepny')
-          console.error("Wystąpił błąd:", error);
-        });
+
+      let response = await fetch(`/api/regions/${regionId}`, { method: 'GET' });
+      let json = await JSON.parse(await response.json());
+
+      if (json.active) {
+        setAvailableRegion(json);
+        setError("");
+      } else {
+        setAvailableRegion(null);
+        setError('Podany region jest nie dostepny')
+      }
     }
   };
+
+
   if (!isLoaded) return <div>Loading...</div>;
+
   return (
     <>
       <div className="p-4 flex flex-col justify-center items-center">
-        <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} setError={setError} error={error}  />
+        <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} setError={setError} error={error} />
         <button
           onClick={handleSubmit}
           className="bg-teal-500 w-1/2 mb-5 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-full shadow-md cursor-pointer focus:outline-none"
@@ -90,7 +88,7 @@ export default function ClientMap() {
         </button>
         {availableRegion && (
           <p>
-            stawka: <strong>{availableRegion}</strong>
+            stawka: <strong>{availableRegion.price}</strong>
           </p>
         )}
       </div>
