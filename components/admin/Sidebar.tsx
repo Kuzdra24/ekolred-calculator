@@ -1,69 +1,20 @@
 "use client";
 import React, { useState } from "react";
-import home from "../../public/assets/icons/home.svg";
-import apps from "../../public/assets/icons/apps.svg";
 import angleSm from "../../public/assets/icons/angle-small-down.svg";
-import marker from "../../public/assets/icons/marker.svg";
-import document from "../../public/assets/icons/document.svg";
-import users from "../../public/assets/icons/users.svg";
+import { sidebarData } from "./sidebarData";
+import { usePathname } from "next/navigation";
 
 import Image from "next/image";
 import Link from "next/link";
+import path from "path";
 
 export const Sidebar: React.FC<{ session: any }> = ({ session }) => {
   const [isCalcOpen, setIsCalcOpen] = useState(false);
-
-  interface sidebarDataProp {
-    slug: string;
-    name: string;
-    icon?: string;
-    subItems?: Array<sidebarDataProp>;
-  }
-
-  const sidebarData: Array<sidebarDataProp> = [
-    {
-      slug: "/admin",
-      name: "Dashboard",
-      icon: home,
-    },
-    {
-      slug: "#",
-      name: "Kalkulator",
-      icon: apps,
-      subItems: [
-        {
-          name: "moduły",
-          slug: "/admin",
-        },
-        {
-          name: "falowniki",
-          slug: "/admin",
-        },
-        {
-          name: "magazyny energii",
-          slug: "/admin",
-        },
-      ],
-    },
-    {
-      slug: "#",
-      name: "Mapa powiatow",
-      icon: marker,
-    },
-    {
-      slug: "#",
-      name: "Oferty",
-      icon: document,
-    },
-    {
-      slug: "#",
-      name: "Moderatorzy",
-      icon: users,
-    },
-  ];
+  const pathname = usePathname();
+  console.log(pathname);
   return (
     <div className="dashboard-layout">
-      <nav className="side-nav bg-gray-700">
+      <nav className="side-nav bg-gray-700 tracking-wide">
         <div>
           <h2 className="header">Panel Administratora</h2>
 
@@ -110,10 +61,13 @@ export const Sidebar: React.FC<{ session: any }> = ({ session }) => {
                     )}
                   </div>
                 ) : (
-                  // Render regular link for other items
                   <Link
                     href={slug}
-                    className="flex items-center hover:bg-gray-600 w-full p-3 rounded-md"
+                    className={
+                      pathname === slug
+                        ? "flex items-center bg-gradient-to-r from-gray-600 to-gray-500 hover:bg-gray-600 w-full p-3 rounded-md"
+                        : "flex items-center  hover:bg-gray-600 w-full p-3 rounded-md"
+                    }
                   >
                     <div className="white-svg-icon mr-5">
                       <Image
