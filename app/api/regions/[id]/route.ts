@@ -16,7 +16,7 @@ export const GET = async (
     const region = await Region.findOne({ id: Number(params.id) }).exec();
 
     if (region) {
-      return new NextResponse(JSON.stringify(region), {
+      return new NextResponse(JSON.stringify(region.price), {
         status: 200,
       });
     } else {
