@@ -7,7 +7,7 @@ export default async function Dashboard() {
     const session = await getServerSession(nextAuthOptions);
 
     if (!session) {
-        redirect("/login?callbackUrl=/admin");
+        redirect("/login?callbackUrl=/adminff");
     }
 
     return (

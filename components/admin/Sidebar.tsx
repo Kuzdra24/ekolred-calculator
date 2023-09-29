@@ -11,7 +11,7 @@ import path from "path";
 export const Sidebar: React.FC<{ session: any }> = ({ session }) => {
   const [isCalcOpen, setIsCalcOpen] = useState(false);
   const pathname = usePathname();
-  console.log(pathname);
+  
   return (
     <div className="dashboard-layout">
       <nav className="side-nav bg-gray-700 tracking-wide">
