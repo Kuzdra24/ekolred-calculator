@@ -34,7 +34,7 @@ export default function ClientMap() {
           const polygon = turf.polygon(feature.geometry.coordinates);
           if (turf.booleanPointInPolygon(point, polygon)) {
             return feature.properties.id;
-          }
+          }else{return 1}
         } else if (feature.geometry.type === "MultiPolygon") {
           for (const coordinates of feature.geometry.coordinates) {
             const polygon = turf.polygon(coordinates);
@@ -49,6 +49,7 @@ export default function ClientMap() {
       setError("Nie wybrano miejsca")
       console.log("nie wybrano");
     }
+    setError("Niedostepny")
     return null;
   };
 

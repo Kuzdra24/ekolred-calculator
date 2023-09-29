@@ -1,14 +1,12 @@
 .dashboard-layout {
     display: flex;
     flex-direction: row;
-
     height: 100vh;
 }
 
 .side-nav {
     flex: 1;
     min-width: 300px;
-    background-color: rgb(38, 38, 119);
     color: white;
     height: 100%;
 
@@ -22,7 +20,9 @@
     font-weight: 700;
     margin: 2rem 1.5rem;
 }
-
+.white-svg-icon img {
+    filter: brightness(0) invert(1); /* This will change the SVG color to white */
+  }
 .menu {
     margin: 0 1.5rem;
 }
