@@ -34,6 +34,10 @@ export const sidebarData: Array<sidebarDataProp> = [
         name: "Magazyny energii",
         slug: "/admin",
       },
+      {
+        name: "Parametry",
+        slug: "/admin",
+      },
     ],
   },
   {
