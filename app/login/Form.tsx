@@ -32,7 +32,7 @@ const Form = () => {
     }, [params]);
 
     if (session.status === "authenticated") {
-        router?.push("/");
+        router?.push(params.get("callbackUrl") ?? "/");
     }
 
     const formSubmit: SubmitHandler<Inputs> = (form) => {
@@ -48,17 +48,12 @@ const Form = () => {
             onSubmit={handleSubmit(formSubmit)}
             className={`flex justify-center items-center flex-col`}
         >
-            <h2
-                className={`leading-[1.15] mt-12 mx-auto w-full  px-2 text-xl my-6 sm:text-2xl font-semibold  font-Poppins`}
-            >
+            <h2 className={`leading-[1.15] mt-12 mx-auto w-full  px-2 text-xl my-6 sm:text-2xl font-semibold  font-Poppins`}>
                 Log In
             </h2>
 
             <fieldset className="w-full px-2 flex justify-center items-center flex-col">
-                <label
-                    className="w-full "
-                    htmlFor="email"
-                >
+                <label className="w-full " htmlFor="email">
                     Email
                 </label>
                 <input

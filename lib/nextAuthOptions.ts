@@ -59,19 +59,26 @@ export const nextAuthOptions: NextAuthOptions = {
     },
 
     callbacks: {
-        session: async ({ session, token }: any) => {
-            if (session?.user) {
-                session.user.firstName = token.firstName;
-                session.user.lastName = token.lastName;
-            }
+        session: async ({ session }: any) => {
+            if (!session) return session;
+
+            await connectMongoDB();
+
+            const userData = await User.findOne({ email: session.user.email });
+
+            console.log(session, userData);
+            
+
+            session.user.id = userData._id;
+            session.user.firstName = userData.firstName;
+            session.user.lastName = userData.lastName;
+            session.user.email = userData.email;
+            session.user.test = "TESTTS";
+
             return session;
         },
 
         jwt: async ({ user, token }: any) => {
-            if (user) {
-                token.firstName = user.firstName;
-                token.lastName = user.lastName;
-            }
             return token;
         },
     },
