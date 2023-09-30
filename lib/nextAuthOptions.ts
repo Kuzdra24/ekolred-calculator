@@ -66,14 +66,10 @@ export const nextAuthOptions: NextAuthOptions = {
 
             const userData = await User.findOne({ email: session.user.email });
 
-            console.log(session, userData);
-            
-
             session.user.id = userData._id;
             session.user.firstName = userData.firstName;
             session.user.lastName = userData.lastName;
             session.user.email = userData.email;
-            session.user.test = "TESTTS";
 
             return session;
         },

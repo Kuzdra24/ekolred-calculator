@@ -13,9 +13,6 @@ export const GET = async () => {
         });
     }
 
-    console.log(session);
-    
-
     await connectMongoDB();
 
     try {
