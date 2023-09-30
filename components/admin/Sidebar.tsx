@@ -3,10 +3,8 @@ import React, { useState } from "react";
 import angleSm from "../../public/assets/icons/angle-small-down.svg";
 import { sidebarData } from "./sidebarData";
 import { usePathname } from "next/navigation";
-
 import Image from "next/image";
 import Link from "next/link";
-import path from "path";
 
 export const Sidebar: React.FC<{ session: any }> = ({ session }) => {
   const [isCalcOpen, setIsCalcOpen] = useState(false);
