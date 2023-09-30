@@ -61,8 +61,8 @@ const PlacesAutocomplete: React.FC<PlacesAutocompletePropTypes> = ({
         placeholder="Search an address"
       />
       {error && <p className="text-red-500 text-xs italic">{error}</p>}
-      <ComboboxPopover>
-        <ComboboxList>
+      <ComboboxPopover className="border-none">
+        <ComboboxList className="bg-white-100 rounded-md ">
           {status === "OK" &&
             data.map(({ place_id, description }) => (
               <ComboboxOption key={place_id} value={description} />

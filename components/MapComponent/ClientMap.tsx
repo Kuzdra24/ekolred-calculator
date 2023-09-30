@@ -23,7 +23,7 @@ export default function ClientMap() {
   const [selected, setSelected] = useState(null);
   const [center, setCenter] = useState(initialCenter);
   const [availableRegion, setAvailableRegion] = useState<any>(null);
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
 
   const getPowiatID = (selectedLocation: any, powiaty: any) => {
     if (selectedLocation) {
@@ -48,10 +48,10 @@ export default function ClientMap() {
 
       return -1;
     } else {
-      setError("Nie wybrano miejsca")
+      setError("Nie wybrano miejsca");
       console.log("nie wybrano");
     }
-    setError("Niedostepny")
+    setError("Niedostepny");
     return null;
   };
 
@@ -59,8 +59,7 @@ export default function ClientMap() {
     const regionId: number | null = getPowiatID(selected, powiaty);
 
     if (regionId) {
-
-      let response = await fetch(`/api/regions/${regionId}`, { method: 'GET' });
+      let response = await fetch(`/api/regions/${regionId}`, { method: "GET" });
       let json = await JSON.parse(await response.json());
 
       if (json.active) {
@@ -68,18 +67,23 @@ export default function ClientMap() {
         setError("");
       } else {
         setAvailableRegion(null);
-        setError('Podany region jest nie dostepny')
+        setError("Podany region jest nie dostepny");
       }
     }
   };
-
 
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <>
+      <Map selected={selected} center={center} />
       <div className="p-4 flex flex-col justify-center items-center">
-        <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} setError={setError} error={error} />
+        <PlacesAutocomplete
+          setSelected={setSelected}
+          setCenter={setCenter}
+          setError={setError}
+          error={error}
+        />
         <button
           onClick={handleSubmit}
           className="bg-teal-500 w-1/2 mb-5 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-full shadow-md cursor-pointer focus:outline-none"
@@ -92,7 +96,6 @@ export default function ClientMap() {
           </p>
         )}
       </div>
-      <Map selected={selected} center={center} />
     </>
   );
 }
