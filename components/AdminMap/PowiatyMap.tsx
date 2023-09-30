@@ -108,7 +108,7 @@ export default function PowiatyMap({ maxZoom = 10, style = {} }) {
     }
     fetchData();
   }, []);
- 
+
   return (
     <>
       <div className="flex">

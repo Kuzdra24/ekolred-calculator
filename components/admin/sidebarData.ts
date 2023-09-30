@@ -23,15 +23,19 @@ export const sidebarData: Array<sidebarDataProp> = [
     icon: apps,
     subItems: [
       {
-        name: "moduły",
+        name: "Moduły",
         slug: "/admin",
       },
       {
-        name: "falowniki",
+        name: "Falowniki",
         slug: "/admin",
       },
       {
-        name: "magazyny energii",
+        name: "Magazyny energii",
+        slug: "/admin",
+      },
+      {
+        name: "Parametry",
         slug: "/admin",
       },
     ],
@@ -47,7 +51,7 @@ export const sidebarData: Array<sidebarDataProp> = [
     icon: document,
   },
   {
-    slug: "#",
+    slug: "/admin/list",
     name: "Moderatorzy",
     icon: users,
   },
