@@ -17,7 +17,6 @@ const Map: React.FC<MapPropTypes> = ({ selected, center }) => {
   const mapContainerStyle = {
     width: "500px",
     height: "500px",
-    borderRadius: "0 0.75rem 0.75rem 0",
   };
   
   return (
